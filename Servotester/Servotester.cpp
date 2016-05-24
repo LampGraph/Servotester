@@ -5,13 +5,13 @@
 
 #define OCR_MIN 112
 #define OCR_MAX 250
-#define ICR_MAX F_CPU/8/55.7 //ICR1(TOP) = fclk/(N*f) ; N-Делитель; f-Частота; 
+#define ICR_MAX F_CPU/64/55.7 //ICR1(TOP) = fclk/(N*f) ; N-Делитель; f-Частота; 
 
 //Инициализация АЦП:
 void adc_init(void){
 	ADCSRA |= (1<<ADEN)|(1<<ADPS2)|(1<<ADPS1)|(1<<ADPS0); // делитель частоты = 128
 
-	ADMUX |= (1<<MUX0);   // Выбираем вход ADC1
+//	ADMUX |= (1<<MUX0);   // Выбираем вход ADC1
 }
 
 //Чтение канала АЦП:
@@ -28,13 +28,13 @@ uint16_t adc_read(){
 void Port_init (void)
 {
 	//Пока не используем
+	DDRB |= (1<<PB1);
 }
 
 //Инициализируем таймеры
 void timer_init (void)
 {
-	TCCR1A |= (0<<WGM10)|(1<<WGM11); // устанавливаем режим шим Fast PWM
-	TCCR1A |= (1<<COM1A1); // определяем механизм изм состояния ножки
+	TCCR1A |= (1<<COM1A1)|(0<<COM1A0)|(0<<WGM10)|(1<<WGM11); // устанавливаем режим шим Fast PWM
 	ICR1=ICR_MAX;
 	OCR1A = OCR_MIN; // выставляем сравнение на минимум
 	TCCR1B |=(1<<CS10)|(1<<CS11)|(0<<CS12)|(1<<WGM12)|(1<<WGM13); //запуск таймера
@@ -70,7 +70,9 @@ int main (void)
 //	sei(); //глобальное разрешение прерываний	
 
 	while(1){
-		adc_result=adc_read(0); //Получаем положение потенциометра
+		adc_result=adc_read(); //Получаем положение потенциометра
 		OCR1A = map(adc_result,0,1024,OCR_MIN,OCR_MAX); //Конвертируем положение потенциометра в значение OCR		
+//		OCR1A=200;
+
 	}
 }
