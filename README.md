@@ -1,2 +1,2 @@
 # Servotester
-Сервотестер на AVR.
+Сервотестер на Atmega8l.
